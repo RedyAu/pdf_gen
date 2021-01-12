@@ -7,7 +7,6 @@ import 'dart:io';
 import 'package:path/path.dart';
 
 //! CONFIG
-final String extractedFramesExtension = ".bmp";
 final int extractEveryNthFrame = 20;
 final double chooserFidelity = 0.1;
 final int chooserTransitionLength = 2;
@@ -15,11 +14,13 @@ final int chooserBeginTransitionLength = 2;
 final int jpgQuality = 60;
 
 //Globals
-List<SourceVideo> vids = List<SourceVideo>();
+final String extractedFramesExtension = ".bmp";
 final List<String> videoExtensions = ['.mp4', '.avi', '.mov'];
+
 final Directory rootDir = Directory(r'PDF-GEN');
 final Directory vidDir = Directory(r'PDF-GEN\_Source Videos');
 final Directory tempDir = Directory(r'PDF-GEN\TEMP');
+List<SourceVideo> vids = List<SourceVideo>();
 
 void main() async {
   print('PDF-GEN\n\nInitializing...');
@@ -28,7 +29,7 @@ void main() async {
   if (!tempDir.existsSync())
     new Directory(tempDir.path).createSync(recursive: true);
 
-  print('Getting source videos...');
+  print('Getting source videos...\n\n');
   // Get source videos
   for (FileSystemEntity file in vidDir.listSync(recursive: true).where(
       (element) =>
@@ -39,28 +40,42 @@ void main() async {
     print('No videos found! Are they the right format? (mp4, avi, mov)');
 
   // Loop through videos
+  int index = 1;
   for (SourceVideo vid in vids) {
+    print(index.toString() +
+        '/' +
+        vids.length.toString() +
+        ' videos: ' +
+        basename(vid.file.path) +
+        '\n');
+
+    if (File(withoutExtension(vid.file.path) + ".pdf").existsSync()) {
+      print('PDF already exists!\n\n');
+      continue;
+    }
+
     print(
-        '1/3 Extracting frames... This may take much time and hard disk space.');
+        '1. Extracting frames... This may take much time and hard disk space.');
     await runFFMPEG(vid);
 
-    print('2/3 Choosing unique frames...');
-    await chooseFrames();
+    print('2. Choosing unique frames...');
+    var keepFrames = await chooseFrames();
 
-    print('3/3 Exporting pdf...');
-    await createPdf(withoutExtension(vid.file.path) + ".pdf");
+    print('3. Exporting pdf...');
+    await createPdf(keepFrames, withoutExtension(vid.file.path) + ".pdf");
 
     for (var entity in tempDir.listSync()) entity.deleteSync();
-    print(vid.name + ' is done! ----------------------------\n\n');
+    print('------------------- Done! -------------------\n\n');
+    index++;
   }
 }
 
-void createPdf(String path) async {
+void createPdf(List<Frame> frames, String path) async {
   final pdf = pw.Document();
 
-  for (File frame in tempDir.listSync().where((element) => element is File)) {
-    var rawFrame =
-        encodeJpg(decodeImage(frame.readAsBytesSync()), quality: jpgQuality);
+  for (Frame frame in frames) {
+    var rawFrame = encodeJpg(decodeImage(frame.file.readAsBytesSync()),
+        quality: jpgQuality);
     var decodedFrame = decodeImage(rawFrame);
 
     final image = pw.MemoryImage(rawFrame);
@@ -75,15 +90,15 @@ void createPdf(String path) async {
   await file.writeAsBytesSync(await pdf.save());
 }
 
-void chooseFrames() {
-  print(' 2/3/1 Getting file list...');
+Future<List<Frame>> chooseFrames() async {
+  print(' 2.1. Getting file list...');
   List<Frame> frames = List<Frame>();
   for (File file in tempDir.listSync().where((element) =>
       element is File && extension(element.path) == extractedFramesExtension))
     frames.add(Frame(file, int.parse(basenameWithoutExtension(file.path))));
   frames.sort((a, b) => a.index.compareTo(b.index));
 
-  print(' 2/3/2 Comparing frames... This may take a while.');
+  print(' 2.2. Comparing frames... This may take a while.');
   List<Frame> toKeep = List<Frame>();
   int index = 1 + chooserBeginTransitionLength;
   toKeep.add(frames[index]);
@@ -92,6 +107,13 @@ void chooseFrames() {
             decodeImage(frames[index - 1].file.readAsBytesSync()),
             decodeImage(frames[index].file.readAsBytesSync()))
         .diffValue;
+
+    if (index % 50 == 0)
+      print('  - ' +
+          index.toString() +
+          '/' +
+          frames.length.toString() +
+          ' frames');
 
     if (diff > chooserFidelity) {
       index += chooserTransitionLength;
@@ -104,10 +126,7 @@ void chooseFrames() {
     }
   }
 
-  print(' 2/3/3 Deleting redundant frames...');
-  for (Frame frame in frames.where((frame) => !toKeep.contains(frame))) {
-    frame.file.deleteSync();
-  }
+  return toKeep;
 }
 
 void runFFMPEG(SourceVideo vid) async {
