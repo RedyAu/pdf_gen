@@ -11,3 +11,4 @@ dependencies:
   diff_image: ^1.0.1
   image: ^2.1.19
   process_run: any
+  pdf: ^2.0.0
