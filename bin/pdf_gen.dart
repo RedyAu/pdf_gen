@@ -180,7 +180,9 @@ Future<List<Frame>> chooseFrames(String ffmpegOutput) async {
     return null;
   }
 
-  print(" 2.2. Comparing frames... This may take a while.");
+  print(" 2.2. Comparing " +
+      frames.length.toString() +
+      " frames... This may take a while.");
   if (!tipShown) {
     print(
         "TIP: The program checks for existing .pdf files, you can stop it and continue next time from the video file you stopped it at (extracted frames and difference checking progress don't get saved.)");
