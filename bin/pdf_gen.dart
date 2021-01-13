@@ -26,56 +26,70 @@ final File configFile = File(r'PDF-GEN\config.txt');
 List<SourceVideo> vids = List<SourceVideo>();
 
 void main() async {
-  print('PDF-GEN\n\nInitializing...');
-  if (await initialize()) {
-    //if true, terminate
-    return;
-  }
+  try {
+    print('PDF-GEN\nWritten by RedyAu in 2021\n\nInitializing...');
+    await initialize();
 
-  print('Getting source videos...\n\n');
-  // Get source videos
-  for (FileSystemEntity file in vidDir.listSync(recursive: true).where(
-      (element) =>
-          videoExtensions.any((ext) => extension(element.path) == ext))) {
-    vids.add(SourceVideo(file, basename(file.path)));
-  }
-  if (vids.isEmpty)
-    print('No videos found! Are they the right format? (mp4, avi, mov)');
+    print('Getting source videos...\n\n');
+    // Get source videos
+    for (FileSystemEntity file in vidDir.listSync(recursive: true).where(
+        (element) =>
+            videoExtensions.any((ext) => extension(element.path) == ext))) {
+      vids.add(SourceVideo(file, basename(file.path)));
+    }
+    if (vids.isEmpty)
+      print('No videos found! Are they the right format? (mp4, avi, mov)');
 
-  // Loop through videos
-  int index = 1;
-  for (SourceVideo vid in vids) {
-    print(index.toString() +
-        '/' +
-        vids.length.toString() +
-        ' videos: ' +
-        basename(vid.file.path) +
-        '\n');
+    // Loop through videos
+    int index = 1;
+    for (SourceVideo vid in vids) {
+      print(index.toString() +
+          '/' +
+          vids.length.toString() +
+          ' videos: ' +
+          basename(vid.file.path) +
+          '\n');
 
-    if (File(withoutExtension(vid.file.path) + ".pdf").existsSync()) {
-      print('PDF already exists!\n\n');
-      continue;
+      if (File(withoutExtension(vid.file.path) + ".pdf").existsSync()) {
+        print('PDF already exists!\n\n');
+        continue;
+      }
+
+      clearTemp();
+
+      print(
+          '1. Extracting frames... This may take a while, and consume much disk space.');
+      String ffmpegOutput = await runFFMPEG(vid);
+
+      print('2. Choosing unique frames...');
+      var keepFrames = await chooseFrames(ffmpegOutput);
+
+      print('3. Exporting pdf...');
+      await createPdf(keepFrames, withoutExtension(vid.file.path) + ".pdf");
+
+      print('Done!\n\n');
+      index++;
     }
 
-    clearTemp();
+    print("\n\nGoodbye!");
+    terminate();
+    //-----------------------
+  } catch (e) {
+    print("\n\nThere was an error while running the program!");
+    print(e);
 
-    print(
-        '1. Extracting frames... This may take a while, and consume much disk space.');
-    String ffmpegOutput = await runFFMPEG(vid);
-
-    print('2. Choosing unique frames...');
-    var keepFrames = await chooseFrames(ffmpegOutput);
-
-    print('3. Exporting pdf...');
-    await createPdf(keepFrames, withoutExtension(vid.file.path) + ".pdf");
-
-    print('------------------- Done! -------------------\n\n');
-    index++;
+    print("\n\n-------\nPress Enter to exit.");
+    stdin.readByteSync();
+    exit(0);
   }
+}
 
+void terminate() {
   clearTemp();
 
-  print('Goodbye!');
+  print("\n\n-------\nPress Enter to exit.");
+  stdin.readByteSync();
+  exit(0);
 }
 
 void clearTemp() {
@@ -90,11 +104,14 @@ Future<bool> initialize() async {
     print(
         "Created folder for source videos. Place videos in any folder structure inside and relaunch the program.");
   }
+  if (!tempDir.existsSync())
+    new Directory(tempDir.path).createSync(recursive: true);
+
   if (!configFile.existsSync()) {
     new File(configFile.path).writeAsStringSync(defaultConfig);
     print(
         "Created config file with default settings. Please edit them and relaunch the program.");
-    return true;
+    terminate();
   } else {
     List<String> configLines = configFile.readAsLinesSync();
 
@@ -116,10 +133,6 @@ Future<bool> initialize() async {
     jpgQuality =
         int.parse(getConfigValue(configLines, "- JPG quality of slides: "));
   }
-  if (!tempDir.existsSync())
-    new Directory(tempDir.path).createSync(recursive: true);
-
-  return false;
 }
 
 String getConfigValue(List<String> configLines, String key) {
@@ -149,6 +162,8 @@ void createPdf(List<Frame> frames, String path) async {
   await file.writeAsBytesSync(await pdf.save());
 }
 
+bool tipShown = false;
+
 Future<List<Frame>> chooseFrames(String ffmpegOutput) async {
   print(' 2.1. Getting file list...');
   List<Frame> frames = List<Frame>();
@@ -161,8 +176,12 @@ Future<List<Frame>> chooseFrames(String ffmpegOutput) async {
         ffmpegOutput.toString());
   }
 
-  print(
-      " 2.2. Comparing frames... This may take a while.\nTIP: The program checks for existing .pdf files, you can stop it and continue next time from the video file you stopped it at (extracted frames and difference checking progress don't get saved.)");
+  print(" 2.2. Comparing frames... This may take a while.");
+  if (!tipShown) {
+    print(
+        "TIP: The program checks for existing .pdf files, you can stop it and continue next time from the video file you stopped it at (extracted frames and difference checking progress don't get saved.)");
+    tipShown = true;
+  }
   List<Frame> toKeep = List<Frame>();
   int index = 1 + chooserBeginTransitionLength;
   toKeep.add(frames[index]);
@@ -213,7 +232,7 @@ Future<String> runFFMPEG(SourceVideo vid) async {
   } catch (e) {
     print(
         "A konvertálás nem sikerült! Telepítve van az ffmpeg?\nHa nincs: https://www.wikihow.com/Install-FFmpeg-on-Windows");
-    exit(1);
+    terminate();
   }
 }
 

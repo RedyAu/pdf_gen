@@ -2,7 +2,7 @@ String defaultConfig = """Config file for PDF-GEN
 Written by RedyAu in 2021
 ONLY EDIT THE VALUES AFTER THE COLONS! IF YOU MESSED UP THE FILE, JUST DELETE IT.
 
--- EXTRACTING FRAMES --
+--- EXTRACTING FRAMES ---
 - Extract every Nth frame: 20
 1 means extract every single frame.
 
@@ -12,7 +12,7 @@ Recommended: .bmp
 Warning: Using .bmp, for a longer video, you may need multiple GBs of hard disk space!
 
 
--- MARKING USEFUL SLIDES --
+--- MARKING USEFUL SLIDES ---
 - Percentage treshold for new slide: 0.1
 Ranges 0-100. Can be any fraction. If no pixels are the same, will be 100.
 Recommended values:
