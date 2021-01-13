@@ -3,7 +3,6 @@ Convert video slideshows to PDFs!\
 Never need to skip around online class videos for a piece of information again!
 
 ## How to use (Windows)
-(If you're on Linux, you can figure it out)
 
 [Download the latest release.](https://github.com/RedyAu/pdf_gen/releases)
 
