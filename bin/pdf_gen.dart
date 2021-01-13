@@ -6,7 +6,6 @@ import 'package:diff_image/diff_image.dart';
 import 'dart:io';
 import 'package:path/path.dart';
 import 'default_config.dart';
-import 'package:http/http.dart' as http;
 
 //Configurables
 int extractEveryNthFrame;
@@ -24,10 +23,12 @@ final Directory vidDir = Directory(r'PDF-GEN\_Source Videos');
 final Directory tempDir = Directory(r'PDF-GEN\TEMP');
 final File configFile = File(r'PDF-GEN\config.txt');
 List<SourceVideo> vids = List<SourceVideo>();
+final String softwareVersion = "b0.1";
 
 void main() async {
   try {
-    print('PDF-GEN\nWritten by RedyAu in 2021\n\nInitializing...');
+    print(
+        'PDF-GEN $softwareVersion\nWritten by RedyAu in 2021\n\nInitializing...');
     await initialize();
 
     print('Getting source videos...\n\n');
