@@ -64,6 +64,7 @@ void main() async {
 
       print('2. Choosing unique frames...');
       var keepFrames = await chooseFrames(ffmpegOutput);
+      if (keepFrames == null) continue;
 
       print('3. Exporting pdf...');
       await createPdf(keepFrames, withoutExtension(vid.file.path) + ".pdf");
@@ -173,8 +174,10 @@ Future<List<Frame>> chooseFrames(String ffmpegOutput) async {
     frames.add(Frame(file, int.parse(basenameWithoutExtension(file.path))));
   frames.sort((a, b) => a.index.compareTo(b.index));
   if (frames.length == 0) {
-    print("Error! There were no frames extracted. This was the FFMPEG log:\n" +
-        ffmpegOutput.toString());
+    print(
+        "Error! There were no frames extracted. Skipping this video. This was the FFMPEG log:\n" +
+            ffmpegOutput.toString());
+    return null;
   }
 
   print(" 2.2. Comparing frames... This may take a while.");
@@ -232,7 +235,7 @@ Future<String> runFFMPEG(SourceVideo vid) async {
         .stderr;
   } catch (e) {
     print(
-        "Could'n extract frames! Is ffmpeg installed?\nGet help at: https://www.wikihow.com/Install-FFmpeg-on-Windows");
+        "Couldn't extract frames! Is ffmpeg installed?\nGet help at: https://www.wikihow.com/Install-FFmpeg-on-Windows");
     terminate();
   }
 }
