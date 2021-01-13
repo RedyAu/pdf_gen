@@ -12,11 +12,12 @@ On the first run, the program will create the following folders:
  - `PDF-GEN/_Source Videos`
  - `PDF-GEN/TEMP`
  - `PDF-GEN/config.txt`
+
 Edit the config file to suit your needs.
 
 Place your video files (.mp4, .avi, .mov) into the `_Source Videos` folder. They can be organized however you like, the program will follow any folder structure recursively.\
 PDF files will be created in the same place and with the same name as original videos.\
-If you placed in all the videos you want to convert, run the program again.
+If you placed in all the videos you want to convert, run the program again.\
 **Important: For longer video files, you might have to have more than 2GB of free storage space on your drive!** All temporary files are deleted when the program completes.
 
 ## How it works
