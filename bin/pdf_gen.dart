@@ -232,7 +232,7 @@ Future<String> runFFMPEG(SourceVideo vid) async {
         .stderr;
   } catch (e) {
     print(
-        "A konvertálás nem sikerült! Telepítve van az ffmpeg?\nHa nincs: https://www.wikihow.com/Install-FFmpeg-on-Windows");
+        "Could'n extract frames! Is ffmpeg installed?\nGet help at: https://www.wikihow.com/Install-FFmpeg-on-Windows");
     terminate();
   }
 }
