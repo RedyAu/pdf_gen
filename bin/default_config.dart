@@ -1,4 +1,4 @@
-import 'pdf_gen.dart';
+import 'globals.dart';
 
 String defaultConfig = """Config file for PDF-GEN
 Written by RedyAu in 2021
@@ -13,6 +13,14 @@ ONLY EDIT THE VALUES AFTER THE COLONS! IF YOU MESSED UP THE FILE, JUST DELETE IT
 Recommended: .bmp
 .jpg file size is smaller, but introduces noise and makes the next step slower and less accurate.
 Warning: Using .bmp, for a longer video, you may need multiple GBs of hard disk space!
+
+- Use a mask: false
+Acceptable: "true", "false"
+On a clean run, a white .png will be generated with the dimensions of the FIRST video. (If you have different resolutions, use the option below.)
+After generating this, the program will terminate. Before starting it again, you can draw black shapes .. ...
+
+- Use unique mask for each video: 
+Acceptable: "true", "false"
 
 
 --- MARKING USEFUL SLIDES ---
