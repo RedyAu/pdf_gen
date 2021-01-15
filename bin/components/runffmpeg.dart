@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart';
-import 'globals.dart';
-import 'utils.dart';
+import '../utils/globals.dart';
+import '../utils/utils.dart';
 
 Future<String> runFFMPEG(SourceVideo vid) async {
   try {

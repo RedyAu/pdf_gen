@@ -2,7 +2,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:image/image.dart';
 import 'dart:io';
-import 'globals.dart';
+import '../utils/globals.dart';
 
 void createPdf(List<Frame> frames, String path) async {
   final pdf = pw.Document();

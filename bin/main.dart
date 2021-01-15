@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:path/path.dart';
-import 'default_config.dart';
-import 'globals.dart';
-import 'utils.dart';
-import 'framechooser.dart';
-import 'createpdf.dart';
-import 'runffmpeg.dart';
+import 'utils/default_config.dart';
+import 'utils/globals.dart';
+import 'utils/utils.dart';
+import 'components/framechooser.dart';
+import 'components/createpdf.dart';
+import 'components/runffmpeg.dart';
 
 void main() async {
   try {
