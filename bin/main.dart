@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:image/image.dart';
 import 'package:path/path.dart';
 import 'components/masking.dart';
 import 'utils/default_config.dart';
@@ -11,83 +10,7 @@ import 'components/runffmpeg.dart';
 
 void main() async {
   try {
-    print(
-        'PDF-GEN $softwareVersion\nWritten by RedyAu in 2021\n\nInitializing...');
-    await initialize();
-
-    print('Getting source videos...\n\n');
-    // Get source videos
-    for (FileSystemEntity file in vidDir.listSync(recursive: true).where(
-        (element) =>
-            videoExtensions.any((ext) => extension(element.path) == ext))) {
-      vids.add(SourceVideo(
-          file,
-          (individualMasksEnabled
-              ? File(withoutExtension(file.path) + "_mask" + ".png")
-              : null)));
-    }
-    if (vids.isEmpty) {
-      print('No videos found! Are they the right format? (mp4, avi, mov)');
-      terminate();
-    }
-    if (maskEnabled) {
-      if (generateMasks()) {
-        individualMasksEnabled
-            ? print(
-                'Generated a blank mask beside each video file. Draw white shapes on them, where you want the content of the frames to be deleted.')
-            : print(
-                'Generated a blank mask in the PDF-GEN folder. Draw white shapes on it, where you want the content of the frames to be deleted.');
-
-        terminate();
-      }
-    }
-
-    // Loop through videos
-    int index = 1;
-    for (SourceVideo vid in vids) {
-      print(index.toString() +
-          '/' +
-          vids.length.toString() +
-          ' videos: ' +
-          basename(vid.file.path) +
-          '\n');
-
-      if (File(withoutExtension(vid.file.path) + ".pdf").existsSync()) {
-        print('PDF already exists!\n\n');
-        index++;
-        continue;
-      }
-
-      clearTemp();
-
-      print(
-          '1. Extracting frames... This may take a while, and consume much disk space.');
-      String ffmpegOutput = await runFFMPEG(vid);
-
-      if (maskEnabled) {
-        print('2. Applying masks... This may take a while.');
-        await applyMasks(vid);
-      }
-
-      print('3. Choosing unique frames...');
-      List<Frame> keepFrames = await chooseFrames(ffmpegOutput);
-      if (keepFrames == null) {
-        print(
-            'Error! There were no frames marked to keep. Processing next video... \n');
-        index++;
-        continue;
-      }
-
-      print('4. Exporting pdf...');
-      await createPdf(keepFrames, withoutExtension(vid.file.path) + ".pdf");
-
-      print('Done!\n\n');
-      index++;
-    }
-
-    print("\n\nGoodbye!");
-    terminate();
-    //-----------------------
+    await program();
   } catch (e) {
     print("\n\nThere was an error while running the program!");
     print(e);
@@ -96,6 +19,85 @@ void main() async {
     stdin.readByteSync();
     exit(0);
   }
+}
+
+void program() async {
+  print(
+      'PDF-GEN $softwareVersion\nWritten by RedyAu in 2021\n\nInitializing...');
+  await initialize();
+
+  print('Getting source videos...\n\n');
+  // Get source videos
+  for (FileSystemEntity file in vidDir.listSync(recursive: true).where(
+      (element) =>
+          videoExtensions.any((ext) => extension(element.path) == ext))) {
+    vids.add(SourceVideo(
+        file,
+        (individualMasksEnabled
+            ? File(withoutExtension(file.path) + "_mask" + ".png")
+            : null)));
+  }
+  if (vids.isEmpty) {
+    print('No videos found! Are they the right format? (mp4, avi, mov)');
+    terminate();
+  }
+  if (maskEnabled) {
+    if (generateMasks()) {
+      individualMasksEnabled
+          ? print(
+              'Generated a blank mask beside each video file. Draw white shapes on them, where you want the content of the frames to be deleted.')
+          : print(
+              'Generated a blank mask in the PDF-GEN folder. Draw white shapes on it, where you want the content of the frames to be deleted.');
+
+      terminate();
+    }
+  }
+
+  // Loop through videos
+  int index = 1;
+  for (SourceVideo vid in vids) {
+    print(index.toString() +
+        '/' +
+        vids.length.toString() +
+        ' videos: ' +
+        basename(vid.file.path) +
+        '\n');
+
+    if (File(withoutExtension(vid.file.path) + ".pdf").existsSync()) {
+      print('PDF already exists!\n\n');
+      index++;
+      continue;
+    }
+
+    clearTemp();
+
+    print(
+        '1. Extracting frames... This may take a while, and consume much disk space.');
+    String ffmpegOutput = await runFFMPEG(vid);
+
+    if (maskEnabled) {
+      print('2. Applying masks... This may take a while.');
+      await applyMasks(vid);
+    }
+
+    print('3. Choosing unique frames...');
+    List<Frame> keepFrames = await chooseFrames(ffmpegOutput);
+    if (keepFrames == null) {
+      print(
+          'Error! There were no frames marked to keep. Processing next video... \n');
+      index++;
+      continue;
+    }
+
+    print('4. Exporting pdf...');
+    await createPdf(keepFrames, withoutExtension(vid.file.path) + ".pdf");
+
+    print('Done!\n\n');
+    index++;
+  }
+
+  print("\n\nGoodbye!");
+  terminate();
 }
 
 void initialize() async {

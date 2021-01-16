@@ -45,7 +45,7 @@ Image getFirstFrame(SourceVideo vid) {
     terminate();
   }
 
-  File frameFile = File(dirname(vid.file.path) + r'\' + framename);
+  File frameFile = File(dirname(vid.file.path) + ps + framename);
 
   if (!frameFile.existsSync()) {
     print(

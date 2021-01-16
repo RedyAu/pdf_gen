@@ -14,12 +14,12 @@ int maskHeight;
 
 //Globals
 final List<String> videoExtensions = ['.mp4', '.avi', '.mov'];
-
-final Directory rootDir = Directory(r'PDF-GEN');
-final Directory vidDir = Directory(r'PDF-GEN\_Source Videos');
-final Directory tempDir = Directory(r'PDF-GEN\TEMP');
-final File configFile = File(r'PDF-GEN\config.txt');
-final File maskFile = File(r'PDF-GEN\mask.png');
+final String ps = Platform.pathSeparator;
+final Directory rootDir = Directory('PDF-GEN');
+final Directory vidDir = Directory('PDF-GEN' + ps + '_Source Videos');
+final Directory tempDir = Directory('PDF-GEN' + ps + 'TEMP');
+final File configFile = File('PDF-GEN' + ps + 'config.txt');
+final File maskFile = File('PDF-GEN' + ps + 'mask.png');
 List<SourceVideo> vids = List<SourceVideo>();
 final String softwareVersion = "b0.2";
 
