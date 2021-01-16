@@ -21,7 +21,7 @@ final Directory tempDir = Directory('PDF-GEN' + ps + 'TEMP');
 final File configFile = File('PDF-GEN' + ps + 'config.txt');
 final File maskFile = File('PDF-GEN' + ps + 'mask.png');
 List<SourceVideo> vids = List<SourceVideo>();
-final String softwareVersion = "b0.2";
+final String softwareVersion = "1.0";
 
 //Types
 class SourceVideo {
