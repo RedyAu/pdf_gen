@@ -7,7 +7,7 @@ import '../globals.dart';
 bool tipShown = false;
 
 Future<List<Frame>> chooseFrames(String ffmpegOutput) async {
-  print(' 2.1. Getting file list...');
+  print(' 3.1. Getting file list...');
   List<Frame> frames = [];
   for (File file in tempDir.listSync())
     frames.add(Frame(file, int.parse(basenameWithoutExtension(file.path))));
@@ -19,7 +19,7 @@ Future<List<Frame>> chooseFrames(String ffmpegOutput) async {
     return null;
   }
 
-  print(" 2.2. Comparing " +
+  print(" 3.2. Comparing " +
       frames.length.toString() +
       " frames... This may take a while.");
   if (!tipShown) {

@@ -41,8 +41,12 @@ void applyMasks(SourceVideo vid) async {
       ? vid.mask.readAsBytesSync()
       : maskFile.readAsBytesSync());
 
+  int index = 0;
   await for (File frameFile in tempDir.list()) {
     File((frameFile.path)).writeAsBytesSync(
         encodePng(decodePng(frameFile.readAsBytesSync()) + mask));
+
+    if (index % 50 == 0) print('  - ' + index.toString() + ' frames');
+    index++;
   }
 }
