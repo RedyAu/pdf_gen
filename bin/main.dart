@@ -8,16 +8,21 @@ import 'components/framechooser.dart';
 import 'components/createpdf.dart';
 import 'components/runffmpeg.dart';
 
+final debug = false;
 void main() async {
-  try {
+  if (debug)
     await program();
-  } catch (e) {
-    print("\n\nThere was an error while running the program!");
-    print(e);
+  else {
+    try {
+      await program();
+    } catch (e) {
+      print("\n\nThere was an error while running the program!");
+      print(e);
 
-    print("\n\n-------\nPress Enter to exit.");
-    stdin.readByteSync();
-    exit(0);
+      print("\n\n-------\nPress Enter to exit.");
+      stdin.readByteSync();
+      exit(0);
+    }
   }
 }
 
@@ -135,7 +140,7 @@ void initialize() async {
         getConfigValue(configLines, "- Percentage treshold for new slide: "));
 
     chooserBeginTransitionLength = int.parse(
-        getConfigValue(configLines, "- Intro transition lenth in frames: "));
+        getConfigValue(configLines, "- Intro transition length in frames: "));
 
     chooserTransitionLength = int.parse(getConfigValue(
         configLines, "- Transition length between slides in frames: "));
