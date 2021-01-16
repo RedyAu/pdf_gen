@@ -10,10 +10,10 @@ ONLY EDIT THE VALUES AFTER THE COLONS! IF YOU MESSED UP THE FILE, JUST DELETE IT
 1 means extract every single frame. Frames will be extracted as .png images.
 
 - Use a mask: false
-Acceptable: "true", "false"
 On a clean run, a black .png will be generated with the dimensions of the FIRST video. (If you have different resolutions, use the option below.)
-After generating this, the program will terminate. Before starting it again, you can draw white shapes, which will be blank on the frames.
+After generating this, the program will terminate. Before starting it again, you can draw white shapes on the mask files, which will be blanked out on the frames.
 With this, you can hide webcams on your videos, for example.
+Acceptable: "true", "false"
 
 - Use unique mask for each video: false
 This option will generate an individual mask for each video file next to it.
@@ -37,4 +37,4 @@ Counts actually extracted frames, take your setting value at "extract every Nth 
 
 --- EXPORTING TO PDF ---
 - JPG quality of slides: 60
-.bmp frames get converted to .jpg before getting added to the exported .pdf files. Set the quality in percentages here. 100 is lossless (but bigger).""";
+.png frames get converted to .jpg before getting added to the exported .pdf files. Set the quality in percentages here. 100 is lossless (but bigger).""";
