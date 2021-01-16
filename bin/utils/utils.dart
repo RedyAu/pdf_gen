@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart';
-import 'globals.dart';
+import '../globals.dart';
 
 void terminate() {
   clearTemp();
@@ -19,6 +19,6 @@ void clearTemp() {
 String getConfigValue(List<String> configLines, String key) {
   //Calling this a key is a bit of a stretch but hey, this isn't open source (oh wait)
   return configLines
-      .firstWhere((element) => element.startsWith(key))
+      .firstWhere((element) => element.startsWith(key), orElse: () => ": ")
       .split(": ")[1];
 }

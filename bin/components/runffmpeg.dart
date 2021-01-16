@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:image/image.dart';
 import 'package:path/path.dart';
-import '../utils/globals.dart';
+import '../globals.dart';
 import '../utils/utils.dart';
 
 Future<String> runFFMPEG(SourceVideo vid) async {
@@ -15,7 +16,7 @@ Future<String> runFFMPEG(SourceVideo vid) async {
               'select=not(mod(n\\,$extractEveryNthFrame))',
               '-vsync',
               'vfr',
-              '%06d$extractedFramesExtension'
+              '%06d.png'
             ],
             //runInShell: true,
             workingDirectory: canonicalize(tempDir.path),
@@ -26,4 +27,33 @@ Future<String> runFFMPEG(SourceVideo vid) async {
         "Couldn't extract frames! Is ffmpeg installed?\nGet help at: https://www.wikihow.com/Install-FFmpeg-on-Windows");
     terminate();
   }
+}
+
+Image getFirstFrame(SourceVideo vid) {
+  String framename = basenameWithoutExtension(vid.file.path) + '_first.png';
+
+  String ffmpegLog;
+  try {
+    ffmpegLog = Process.runSync('ffmpeg',
+            ['-i', canonicalize(vid.file.path), '-vframes', '1', '$framename'],
+            workingDirectory: canonicalize(dirname(vid.file.path)),
+            stderrEncoding: utf8)
+        .stderr;
+  } catch (e) {
+    print(
+        "Couldn't extract first frame! Is ffmpeg installed?\nGet help at: https://www.wikihow.com/Install-FFmpeg-on-Windows");
+    terminate();
+  }
+
+  File frameFile = File(dirname(vid.file.path) + r'\' + framename);
+
+  if (!frameFile.existsSync()) {
+    print(
+        "Couldn't extract first frame! This was the ffmpeg log:\n" + ffmpegLog);
+    terminate();
+  }
+
+  Image frame = decodeImage(frameFile.readAsBytesSync());
+  frameFile.delete();
+  return frame;
 }
