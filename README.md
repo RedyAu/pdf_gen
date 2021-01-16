@@ -18,6 +18,7 @@ Edit the config file to suit your needs.
 Place your video files (.mp4, .avi, .mov) into the `_Source Videos` folder. They can be organized however you like, the program will follow any folder structure recursively.\
 PDF files will be created in the same place and with the same name as original videos.\
 If you placed in all the videos you want to convert, run the program again.\
+You can also apply masks to the videos, for example if you have a webcam in one corner. Read the config file comments for more info on this.\
 **Important: For longer video files, you might have to have more than 2GB of free storage space on your drive!** All temporary files are deleted when the program completes.
 
 ## How it works
