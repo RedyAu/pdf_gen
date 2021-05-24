@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:image/image.dart';
 
 //Configurables
 int extractEveryNthFrame;
@@ -20,8 +19,8 @@ final Directory vidDir = Directory('PDF-GEN' + ps + '_Source Videos');
 final Directory tempDir = Directory('PDF-GEN' + ps + 'TEMP');
 final File configFile = File('PDF-GEN' + ps + 'config.txt');
 final File maskFile = File('PDF-GEN' + ps + 'mask.png');
-List<SourceVideo> vids = List<SourceVideo>();
-final String softwareVersion = "1.0";
+List<SourceVideo> vids = [];
+final String softwareVersion = "1.0.1";
 
 //Types
 class SourceVideo {
@@ -34,7 +33,7 @@ class SourceVideo {
 class Frame {
   final File file;
   final int index;
-  Image data;
+  //Image data;
 
-  Frame(this.file, this.index, [this.data]);
+  Frame(this.file, this.index);
 }

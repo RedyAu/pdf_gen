@@ -31,30 +31,17 @@ Future<List<Frame>> chooseFrames(String ffmpegOutput) async {
   int index = 1 + chooserBeginTransitionLength;
   toKeep.add(frames[index]);
 
-  Frame sooner;
-  Frame later;
+  Image currentFrame;
+  Image nextFrame;
+
+  currentFrame = decodePng(frames.first.file.readAsBytesSync());
 
   while (true) {
-    print(index);
-    if (later != null) {
-      if (later.index == (index - 1))
-        sooner = later;
-      else
-        sooner = frames[index - 1];
-      try {
-        sooner.data = decodePng(sooner.file.readAsBytesSync());
-      } catch (e) {
-        print("ERROR " + e.toString());
-      }
-    } else {
-      sooner = frames[index - 1];
-      sooner.data = decodePng(sooner.file.readAsBytesSync());
-    }
-    later = frames[index];
-    later.data = decodePng(later.file.readAsBytesSync());
+    nextFrame = decodePng(frames[index + 1].file.readAsBytesSync());
 
-    double diff =
-        DiffImage.compareFromMemory(sooner.data, later.data).diffValue;
+    double diff = DiffImage.compareFromMemory(currentFrame, nextFrame).diffValue;
+
+    currentFrame = nextFrame;
 
     if (index % 50 == 0)
       print('  - ' +
@@ -71,7 +58,7 @@ Future<List<Frame>> chooseFrames(String ffmpegOutput) async {
       index++;
     }
 
-    if (index >= frames.length) break;
+    if (index + 1 >= frames.length) break;
   }
 
   return toKeep;
