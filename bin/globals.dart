@@ -40,7 +40,7 @@ final Directory tempDir =
 final File configFile = File('config.txt');
 final File maskFile = File('mask.png');
 List<SourceVideo> vids = [];
-final String softwareVersion = "2.0.0";
+final String softwareVersion = "2.0.1"; //TODO update me
 
 //Types
 class SourceVideo {
@@ -53,7 +53,6 @@ class SourceVideo {
 class Frame {
   final File file;
   final int index;
-  //Image data;
 
   Frame(this.file, this.index);
 }

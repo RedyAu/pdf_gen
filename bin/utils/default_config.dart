@@ -36,6 +36,9 @@ Recommended values:
 - Intro transition length in frames: 0
 Counts actually extracted frames, take your setting value at "extract every Nth frame" into account!
 
+- Outro transition length in frames: 0
+Counts actually extracted frames, take your setting value at "extract every Nth frame" into account!
+
 - Transition length between slides in frames: 1
 As the script goes trough the extracted frames, if it finds a difference beyond the treshold, it will jump ahead by this amount, mark that frame as a useful slide, and continue checking from there.
 Counts actually extracted frames, take your setting value at "extract every Nth frame" into account!

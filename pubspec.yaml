@@ -1,6 +1,6 @@
 name: pdf_gen
 description: Generate pdf files from video slideshows easily
-version: 2.0.0
+version: 2.0.1
 
 environment:
   sdk: '>=2.12.0 <3.0.0'

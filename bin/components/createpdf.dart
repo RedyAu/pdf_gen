@@ -1,10 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:image/image.dart';
 import 'dart:io';
 import '../globals.dart';
 
-void createPdf(List<Frame> frames, String path) async {
+Future createPdf(List<Frame> frames, String path) async {
   final pdf = pw.Document();
 
   for (Frame frame in frames) {
@@ -21,5 +23,6 @@ void createPdf(List<Frame> frames, String path) async {
   }
 
   final file = File(path);
-  await file.writeAsBytesSync(await pdf.save());
+  file.writeAsBytesSync(await pdf.save());
+  return;
 }
