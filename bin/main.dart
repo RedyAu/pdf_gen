@@ -85,7 +85,7 @@ void program() async {
 
     print(
         '1. Extracting frames... This may take a while, and consume much disk space.');
-    String ffmpegOutput = await runFFMPEG(vid);
+    String? ffmpegOutput = await runFFMPEG(vid);
 
 /*
 ! old way of applying masks to each file
@@ -96,7 +96,7 @@ TODO removeme
     }
 */
     print('2. Choosing unique frames...');
-    List<Frame> keepFrames = await chooseFrames(ffmpegOutput, vid);
+    List<Frame>? keepFrames = await chooseFrames(ffmpegOutput, vid);
     if (keepFrames == null || keepFrames.length == 0) {
       print(
           'Error! There were no frames marked to keep. Processing next video... \n');

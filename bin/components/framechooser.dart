@@ -7,11 +7,11 @@ import 'masking.dart';
 
 bool tipShown = false;
 
-Future<List<Frame>> chooseFrames(
-    String ffmpegOutput, SourceVideo sourceVideo) async {
+Future<List<Frame>?> chooseFrames(
+    String? ffmpegOutput, SourceVideo sourceVideo) async {
   print(' 3.1. Getting file list...');
   List<Frame> frames = [];
-  for (File file in tempDir.listSync())
+  for (File file in tempDir.listSync() as Iterable<File>)
     frames.add(Frame(file, int.parse(basenameWithoutExtension(file.path))));
   frames.sort((a, b) => a.index.compareTo(b.index));
   if (frames.length == 0) {
@@ -46,8 +46,8 @@ Future<List<Frame>> chooseFrames(
   int index = 0;
   toKeep.add(frames[index]);
 
-  Image currentFrame;
-  Image nextFrame;
+  Image? currentFrame;
+  Image? nextFrame;
 
   currentFrame =
       getMasked(decodePng(frames.first.file.readAsBytesSync()), sourceVideo);
@@ -56,8 +56,8 @@ Future<List<Frame>> chooseFrames(
     nextFrame = decodePng(frames[index + 1].file.readAsBytesSync());
 
     double diff = await compareImages(
-        src1: currentFrame.getBytes(),
-        src2: nextFrame.getBytes(),
+        src1: currentFrame!.getBytes(),
+        src2: nextFrame!.getBytes(),
         algorithm: PerceptualHash());
 
     currentFrame = nextFrame;

@@ -5,7 +5,7 @@ import 'package:path/path.dart';
 import '../globals.dart';
 import '../utils/utils.dart';
 
-Future<String> runFFMPEG(SourceVideo vid) async {
+Future<String?> runFFMPEG(SourceVideo vid) async {
   try {
     return Process.runSync(
             'ffmpeg',
@@ -30,10 +30,10 @@ Future<String> runFFMPEG(SourceVideo vid) async {
   }
 }
 
-Image getFirstFrame(SourceVideo vid) {
+Image? getFirstFrame(SourceVideo vid) {
   String framename = basenameWithoutExtension(vid.file.path) + '_first.png';
 
-  String ffmpegLog;
+  String? ffmpegLog;
   try {
     ffmpegLog = Process.runSync('ffmpeg',
             ['-i', canonicalize(vid.file.path), '-vframes', '1', '$framename'],
@@ -50,11 +50,11 @@ Image getFirstFrame(SourceVideo vid) {
 
   if (!frameFile.existsSync()) {
     print(
-        "Couldn't extract first frame! This was the ffmpeg log:\n" + ffmpegLog);
+        "Couldn't extract first frame! This was the ffmpeg log:\n" + ffmpegLog!);
     terminate();
   }
 
-  Image frame = decodeImage(frameFile.readAsBytesSync());
+  Image? frame = decodeImage(frameFile.readAsBytesSync());
   frameFile.delete();
   return frame;
 }

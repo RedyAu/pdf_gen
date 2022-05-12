@@ -10,11 +10,11 @@ bool generateMasks() {
 
   if (individualMasksEnabled) {
     for (SourceVideo vid in vids) {
-      if (!vid.mask.existsSync()) {
-        vid.mask.createSync();
-        vid.mask.writeAsBytesSync(
+      if (!vid.mask!.existsSync()) {
+        vid.mask!.createSync();
+        vid.mask!.writeAsBytesSync(
           encodePng(
-            getSameBlack(getFirstFrame(vid)),
+            getSameBlack(getFirstFrame(vid)!),
           ),
         );
         gotNewMasks = true;
@@ -41,7 +41,7 @@ bool generateMasks() {
             vids.firstWhere(
               (element) => element.file.path.startsWith(path),
             ),
-          )),
+          )!),
         ),
       );
     }
@@ -51,7 +51,7 @@ bool generateMasks() {
       maskFile.writeAsBytesSync(
         encodePng(
           getSameBlack(
-            getFirstFrame(vids.first),
+            getFirstFrame(vids.first)!,
           ),
         ),
       );
@@ -70,14 +70,14 @@ Image getSameBlack(Image originalImg) {
       format: Format.rgb);
 }
 
-Image currentMask;
-String currentMaskPath;
-String perviousMaskPath;
-Image getMasked(Image original, SourceVideo video) {
+Image? currentMask;
+String? currentMaskPath;
+String? perviousMaskPath;
+Image? getMasked(Image? original, SourceVideo video) {
   if (!maskEnabled) return original;
 
   if (individualMasksEnabled) {
-    currentMaskPath = video.mask.path;
+    currentMaskPath = video.mask!.path;
   } else if (subfolderMasksEnabled) {
     currentMaskPath = dirname(video.file.path) + ps + "mask.png";
   } else {
@@ -85,16 +85,16 @@ Image getMasked(Image original, SourceVideo video) {
   }
 
   if (currentMaskPath != perviousMaskPath) {
-    if (!File(currentMaskPath).existsSync()) {
-      currentMask = getSameBlack(getFirstFrame(video));
+    if (!File(currentMaskPath!).existsSync()) {
+      currentMask = getSameBlack(getFirstFrame(video)!);
       print(
           "Couldn't find mask for ${video.file.path}! Assuming no mask. Restart the program to recreate blank mask(s).");
     } else
-      currentMask = decodePng(video.mask.readAsBytesSync());
+      currentMask = decodePng(video.mask!.readAsBytesSync());
   }
   perviousMaskPath = currentMaskPath;
 
-  return original + currentMask; //'Image' makes this stupidly easy <3
+  return original! + currentMask!; //'Image' makes this stupidly easy <3
 }
 
 /*

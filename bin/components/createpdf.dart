@@ -8,11 +8,11 @@ void createPdf(List<Frame> frames, String path) async {
   final pdf = pw.Document();
 
   for (Frame frame in frames) {
-    var rawFrame = encodeJpg(decodeImage(frame.file.readAsBytesSync()),
+    var rawFrame = encodeJpg(decodeImage(frame.file.readAsBytesSync())!,
         quality: jpgQuality);
-    var decodedFrame = decodeImage(rawFrame);
+    var decodedFrame = decodeImage(rawFrame)!;
 
-    final image = pw.MemoryImage(rawFrame);
+    final image = pw.MemoryImage(rawFrame as Uint8List);
     pdf.addPage(pw.Page(
         pageFormat: PdfPageFormat(
             decodedFrame.width.toDouble(), decodedFrame.height.toDouble(),

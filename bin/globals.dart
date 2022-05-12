@@ -1,17 +1,17 @@
 import 'dart:io';
 
 //Configurables
-int extractEveryNthFrame;
-double chooserFidelity;
-int chooserTransitionFrameCount;
-int chooserIntroFrameCount;
-int chooserOutroFrameCount;
-int jpgQuality;
+int? extractEveryNthFrame;
+late double chooserFidelity;
+late int chooserTransitionFrameCount;
+late int chooserIntroFrameCount;
+late int chooserOutroFrameCount;
+late int jpgQuality;
 bool maskEnabled = false;
 bool subfolderMasksEnabled = false;
 bool individualMasksEnabled = false;
-int maskWidth;
-int maskHeight;
+int? maskWidth;
+int? maskHeight;
 
 //Globals
 final List<String> videoExtensions = [
@@ -45,7 +45,7 @@ final String softwareVersion = "2.0.0";
 //Types
 class SourceVideo {
   final File file;
-  final File mask;
+  final File? mask;
 
   SourceVideo(this.file, [this.mask]);
 }
