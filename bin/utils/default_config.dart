@@ -19,6 +19,12 @@ Acceptable: "true", "false"
 This option will generate an individual mask for each video file next to it.
 Acceptable: "true", "false"
 
+ +++ OR +++
+
+- Use a mask per subfolder: false
+This option will generate a mask for every subfolder, and use it for each video in the folder.
+Acceptable: "true", "false"
+
 
 --- MARKING USEFUL SLIDES ---
 - Percentage treshold for new slide: 0.3

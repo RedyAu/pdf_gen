@@ -1,12 +1,14 @@
 import 'package:image/image.dart';
-import 'package:diff_image/diff_image.dart';
+import 'package:image_compare/image_compare.dart';
 import 'dart:io';
 import 'package:path/path.dart';
 import '../globals.dart';
+import 'masking.dart';
 
 bool tipShown = false;
 
-Future<List<Frame>> chooseFrames(String ffmpegOutput) async {
+Future<List<Frame>> chooseFrames(
+    String ffmpegOutput, SourceVideo sourceVideo) async {
   print(' 3.1. Getting file list...');
   List<Frame> frames = [];
   for (File file in tempDir.listSync())
@@ -27,19 +29,36 @@ Future<List<Frame>> chooseFrames(String ffmpegOutput) async {
         "TIP: The program checks for existing .pdf files, you can stop it and continue next time from the video file you stopped it at (extracted frames and difference checking progress don't get saved.)");
     tipShown = true;
   }
+  if (frames.length - (chooserIntroFrameCount + chooserOutroFrameCount) <= 0) {
+    print(
+        'Error! Specified intro and outro length is longer than the video.\nKeep in mind, you have to enter actually extracted frame count, not duration. Continuing without ignoring them.');
+  } else {
+    try {
+      frames = frames.sublist(chooserIntroFrameCount + 1,
+          (frames.length - chooserOutroFrameCount) - 1);
+    } catch (e) {
+      print(
+          'Error while ignoring intro and outro. Continuing without ignoring them.\nError was: $e');
+    }
+  }
+
   List<Frame> toKeep = [];
-  int index = 1 + chooserBeginTransitionLength;
+  int index = 0;
   toKeep.add(frames[index]);
 
   Image currentFrame;
   Image nextFrame;
 
-  currentFrame = decodePng(frames.first.file.readAsBytesSync());
+  currentFrame =
+      getMasked(decodePng(frames.first.file.readAsBytesSync()), sourceVideo);
 
   while (true) {
     nextFrame = decodePng(frames[index + 1].file.readAsBytesSync());
 
-    double diff = DiffImage.compareFromMemory(currentFrame, nextFrame).diffValue;
+    double diff = await compareImages(
+        src1: currentFrame.getBytes(),
+        src2: nextFrame.getBytes(),
+        algorithm: PerceptualHash());
 
     currentFrame = nextFrame;
 
@@ -51,7 +70,7 @@ Future<List<Frame>> chooseFrames(String ffmpegOutput) async {
           ' frames');
 
     if (diff > chooserFidelity) {
-      index += chooserTransitionLength;
+      index += chooserTransitionFrameCount;
 
       toKeep.add(frames[(index >= frames.length) ? frames.length - 1 : index]);
     } else {

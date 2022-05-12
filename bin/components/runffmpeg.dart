@@ -26,6 +26,7 @@ Future<String> runFFMPEG(SourceVideo vid) async {
     print(
         "Couldn't extract frames! Is ffmpeg installed?\nGet help at: https://www.wikihow.com/Install-FFmpeg-on-Windows");
     terminate();
+    return ""; //Just to make intellisense happy
   }
 }
 

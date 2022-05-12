@@ -11,16 +11,50 @@ bool generateMasks() {
   if (individualMasksEnabled) {
     for (SourceVideo vid in vids) {
       if (!vid.mask.existsSync()) {
-        File(vid.mask.path).createSync();
-        vid.mask.writeAsBytesSync(encodePng(getSameBlack(getFirstFrame(vid))));
+        vid.mask.createSync();
+        vid.mask.writeAsBytesSync(
+          encodePng(
+            getSameBlack(getFirstFrame(vid)),
+          ),
+        );
         gotNewMasks = true;
       }
+    }
+  } else if (subfolderMasksEnabled) {
+    List<Directory> dirs = [];
+    dirs.add(Directory.current);
+    dirs.addAll(Directory.current.listSync(recursive: true).whereType<Directory>());
+
+    for (String path in dirs.map((e) => e.path)) {
+      if (!vids.any((element) => element.file.path.startsWith(path))) continue;
+
+      File mask = File(path + ps + "mask.png");
+      if (mask.existsSync())
+        continue;
+      else
+        gotNewMasks = true;
+
+      mask.createSync();
+      mask.writeAsBytesSync(
+        encodePng(
+          getSameBlack(getFirstFrame(
+            vids.firstWhere(
+              (element) => element.file.path.startsWith(path),
+            ),
+          )),
+        ),
+      );
     }
   } else {
     if (!maskFile.existsSync()) {
       File(maskFile.path).createSync();
-      maskFile
-          .writeAsBytesSync(encodePng(getSameBlack(getFirstFrame(vids.first))));
+      maskFile.writeAsBytesSync(
+        encodePng(
+          getSameBlack(
+            getFirstFrame(vids.first),
+          ),
+        ),
+      );
       gotNewMasks = true;
     }
   }
@@ -36,6 +70,37 @@ Image getSameBlack(Image originalImg) {
       format: Format.rgb);
 }
 
+Image currentMask;
+String currentMaskPath;
+String perviousMaskPath;
+Image getMasked(Image original, SourceVideo video) {
+  if (!maskEnabled) return original;
+
+  if (individualMasksEnabled) {
+    currentMaskPath = video.mask.path;
+  } else if (subfolderMasksEnabled) {
+    currentMaskPath = dirname(video.file.path) + ps + "mask.png";
+  } else {
+    currentMaskPath = maskFile.path;
+  }
+
+  if (currentMaskPath != perviousMaskPath) {
+    if (!File(currentMaskPath).existsSync()) {
+      currentMask = getSameBlack(getFirstFrame(video));
+      print(
+          "Couldn't find mask for ${video.file.path}! Assuming no mask. Restart the program to recreate blank mask(s).");
+    } else
+      currentMask = decodePng(video.mask.readAsBytesSync());
+  }
+  perviousMaskPath = currentMaskPath;
+
+  return original + currentMask; //'Image' makes this stupidly easy <3
+}
+
+/*
+! old way of masking per file
+TODO removeme
+
 void applyMasks(SourceVideo vid) async {
   Image mask = decodePng(individualMasksEnabled
       ? vid.mask.readAsBytesSync()
@@ -50,3 +115,4 @@ void applyMasks(SourceVideo vid) async {
     index++;
   }
 }
+*/

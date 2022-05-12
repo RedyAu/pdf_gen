@@ -3,24 +3,44 @@ import 'dart:io';
 //Configurables
 int extractEveryNthFrame;
 double chooserFidelity;
-int chooserTransitionLength;
-int chooserBeginTransitionLength;
+int chooserTransitionFrameCount;
+int chooserIntroFrameCount;
+int chooserOutroFrameCount;
 int jpgQuality;
-bool maskEnabled;
-bool individualMasksEnabled;
+bool maskEnabled = false;
+bool subfolderMasksEnabled = false;
+bool individualMasksEnabled = false;
 int maskWidth;
 int maskHeight;
 
 //Globals
-final List<String> videoExtensions = ['.mp4', '.avi', '.mov'];
+final List<String> videoExtensions = [
+  //! If you need a format supported by ffmpeg and not listed here, create an issue or open a PR!
+  '.mp4',
+  '.avi',
+  '.mov',
+  '.wmv',
+  '.flv',
+  '.m4v',
+  '.mov',
+  '.mp4',
+  '.m4a',
+  '.3gp',
+  '.3g2',
+  '.mj2',
+  '.mpeg',
+  '.mp2'
+];
+
 final String ps = Platform.pathSeparator;
-final Directory rootDir = Directory('PDF-GEN');
-final Directory vidDir = Directory('PDF-GEN' + ps + '_Source Videos');
-final Directory tempDir = Directory('PDF-GEN' + ps + 'TEMP');
-final File configFile = File('PDF-GEN' + ps + 'config.txt');
-final File maskFile = File('PDF-GEN' + ps + 'mask.png');
+//final Directory rootDir = Directory('PDF-GEN');
+//final Directory vidDir = Directory('PDF-GEN' + ps + '_Source Videos');
+final Directory tempDir =
+    Directory(Directory.systemTemp.path + ps + "frames_temp");
+final File configFile = File('config.txt');
+final File maskFile = File('mask.png');
 List<SourceVideo> vids = [];
-final String softwareVersion = "1.0.1";
+final String softwareVersion = "2.0.0";
 
 //Types
 class SourceVideo {
